@@ -111,7 +111,7 @@ const Index = () => {
         <Button
           onClick={handleReset}
           variant="outline"
-          className="border-white text-white hover:bg-white hover:text-black visible"
+          className="border-white text-white hover:bg-white hover:text-black"
         >
           Reset
         </Button>
