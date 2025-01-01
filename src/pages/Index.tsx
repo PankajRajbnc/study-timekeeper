@@ -21,17 +21,15 @@ const Index = () => {
   }>>([]);
   const { toast } = useToast();
 
-  // Load sessions from localStorage on initial render
   useEffect(() => {
-    const savedSessions = localStorage.getItem('studySessions');
+    const savedSessions = localStorage.getItem("studySessions");
     if (savedSessions) {
       setSessions(JSON.parse(savedSessions));
     }
   }, []);
 
-  // Save sessions to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('studySessions', JSON.stringify(sessions));
+    localStorage.setItem("studySessions", JSON.stringify(sessions));
   }, [sessions]);
 
   useEffect(() => {
@@ -88,7 +86,9 @@ const Index = () => {
   };
 
   const handleDeleteSession = (sessionId: string) => {
-    setSessions((prevSessions) => prevSessions.filter(session => session.id !== sessionId));
+    setSessions((prevSessions) =>
+      prevSessions.filter((session) => session.id !== sessionId)
+    );
     toast({
       title: "Session Deleted",
       description: "Study session has been removed",
@@ -101,9 +101,7 @@ const Index = () => {
         <div className="text-sm text-gray-400">
           {session.startTime} - {session.endTime}
         </div>
-        <div className="text-lg">
-          Duration: {formatTime(session.duration)}
-        </div>
+        <div className="text-lg">Duration: {formatTime(session.duration)}</div>
       </div>
       <Button
         variant="ghost"
@@ -117,7 +115,10 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+    <div
+      className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4"
+      style={{ fontFamily: "'Press Start 2P', monospace" }}
+    >
       <div className="absolute top-4 left-4">
         <Sheet>
           <SheetTrigger asChild>
@@ -138,8 +139,8 @@ const Index = () => {
         </Sheet>
       </div>
 
-      <div className="text-8xl font-mono mb-8">{formatTime(time)}</div>
-      
+      <div className="text-[10rem] mb-8">{formatTime(time)}</div>
+
       <div className="space-x-4 mb-12">
         {!isRunning ? (
           <Button
@@ -166,10 +167,10 @@ const Index = () => {
       </div>
 
       {sessions.length > 0 && (
-        <div className="w-full max-w-2xl">
-          <h2 className="text-xl mb-4">Recent Sessions</h2>
+        <div className="w-full max-w-2xl mt-12 mb-[-200px]">
+          <h2 className="text-xl mb-4">Recent Session</h2>
           <div className="space-y-2">
-            {sessions.slice(-2).map((session) => (
+            {sessions.slice(-1).map((session) => (
               <SessionCard key={session.id} session={session} />
             ))}
           </div>
