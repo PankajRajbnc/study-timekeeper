@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Index = () => {
   const [time, setTime] = useState(0);
@@ -88,8 +95,49 @@ const Index = () => {
     });
   };
 
+  const SessionCard = ({ session }: { session: typeof sessions[0] }) => (
+    <div className="bg-white/10 p-4 rounded-lg flex justify-between items-center">
+      <div>
+        <div className="text-sm text-gray-400">
+          {session.startTime} - {session.endTime}
+        </div>
+        <div className="text-lg">
+          Duration: {formatTime(session.duration)}
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => handleDeleteSession(session.id)}
+        className="text-gray-400 hover:text-white hover:bg-white/10"
+      >
+        <Trash2 className="h-5 w-5" />
+      </Button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="text-white">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="bg-black text-white w-[400px]">
+            <SheetHeader>
+              <SheetTitle className="text-white">All Study Sessions</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 space-y-4">
+              {sessions.map((session) => (
+                <SessionCard key={session.id} session={session} />
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
       <div className="text-8xl font-mono mb-8">{formatTime(time)}</div>
       
       <div className="space-x-4 mb-12">
@@ -119,30 +167,10 @@ const Index = () => {
 
       {sessions.length > 0 && (
         <div className="w-full max-w-2xl">
-          <h2 className="text-xl mb-4">Study Sessions</h2>
+          <h2 className="text-xl mb-4">Recent Sessions</h2>
           <div className="space-y-2">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className="bg-white/10 p-4 rounded-lg flex justify-between items-center"
-              >
-                <div>
-                  <div className="text-sm text-gray-400">
-                    {session.startTime} - {session.endTime}
-                  </div>
-                  <div className="text-lg">
-                    Duration: {formatTime(session.duration)}
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteSession(session.id)}
-                  className="text-gray-400 hover:text-white hover:bg-white/10"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
-              </div>
+            {sessions.slice(-2).map((session) => (
+              <SessionCard key={session.id} session={session} />
             ))}
           </div>
         </div>
