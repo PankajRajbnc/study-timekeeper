@@ -1,19 +1,34 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Trash2 } from "lucide-react";
 
 const Index = () => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [sessions, setSessions] = useState<Array<{
+    id: string;
     startTime: string;
     endTime: string;
     duration: number;
   }>>([]);
   const { toast } = useToast();
 
+  // Load sessions from localStorage on initial render
   useEffect(() => {
-    let intervalId: number;
+    const savedSessions = localStorage.getItem('studySessions');
+    if (savedSessions) {
+      setSessions(JSON.parse(savedSessions));
+    }
+  }, []);
+
+  // Save sessions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('studySessions', JSON.stringify(sessions));
+  }, [sessions]);
+
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>;
     if (isRunning) {
       intervalId = setInterval(() => {
         setTime((prevTime) => prevTime + 1);
@@ -43,6 +58,7 @@ const Index = () => {
     if (isRunning) {
       setIsRunning(false);
       const newSession = {
+        id: Date.now().toString(),
         startTime: new Date(Date.now() - time * 1000).toLocaleString(),
         endTime: new Date().toLocaleString(),
         duration: time,
@@ -61,6 +77,14 @@ const Index = () => {
     toast({
       title: "Timer Reset",
       description: "Timer has been reset to 00:00:00",
+    });
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    setSessions((prevSessions) => prevSessions.filter(session => session.id !== sessionId));
+    toast({
+      title: "Session Deleted",
+      description: "Study session has been removed",
     });
   };
 
@@ -97,10 +121,10 @@ const Index = () => {
         <div className="w-full max-w-2xl">
           <h2 className="text-xl mb-4">Study Sessions</h2>
           <div className="space-y-2">
-            {sessions.map((session, index) => (
+            {sessions.map((session) => (
               <div
-                key={index}
-                className="bg-white/10 p-4 rounded-lg flex justify-between"
+                key={session.id}
+                className="bg-white/10 p-4 rounded-lg flex justify-between items-center"
               >
                 <div>
                   <div className="text-sm text-gray-400">
@@ -110,6 +134,14 @@ const Index = () => {
                     Duration: {formatTime(session.duration)}
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDeleteSession(session.id)}
+                  className="text-gray-400 hover:text-white hover:bg-white/10"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
               </div>
             ))}
           </div>
